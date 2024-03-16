@@ -1,6 +1,8 @@
 from langchain_google_genai import GoogleGenerativeAI
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class Connection:
     def __init__(self):
@@ -10,3 +12,4 @@ class Connection:
     def response(self, prompt: str):
         self.llm = GoogleGenerativeAI(model='gemini-pro')
         return self.llm.invoke(prompt)
+
