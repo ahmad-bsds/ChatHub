@@ -1,5 +1,6 @@
 import streamlit as st
 from connections import  Connection
+from streamlit_modal import Modal
 
 conn = Connection()
 
@@ -8,7 +9,7 @@ USER_AVATAR = "♥️"
 BOT_AVATAR = "💬"
 # Streamlit Page Configuration
 st.set_page_config(
-    page_title="Streamly Streamlit Assistant",
+    page_title="ChatHub",
     page_icon="imgs/avatar_streamly.png",
     layout="wide",
     initial_sidebar_state="expanded",

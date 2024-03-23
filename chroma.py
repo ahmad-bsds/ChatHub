@@ -1,51 +1,34 @@
+from typing import Dict, List, Any, Sequence, Mapping
+
 import chromadb
 import chromadb.utils.embedding_functions as embedding_functions
-from chromadb import Documents, EmbeddingFunction, Embeddings
-
-
+from chromadb import Documents, EmbeddingFunction, Embeddings, QueryResult
+from numpy import ndarray, dtype, unsignedinteger, signedinteger, floating
 
 # Chroma client:
 chroma_client = chromadb.Client()
 
-class ChromaClass(EmbeddingFunction):
+
+class ChromaClass():
     def __init__(self):
-        self.embedding_func = embedding_functions.GooglePalmEmbeddingFunction(
-                                 api_key="'AIzaSyBnOXear5WrP2FWdZ14tQATdy4_2i6aM-8'",
-                                 model='gemini-pro'
-        )
         self.client = chromadb.Client()
-        self.collection = chroma_client.create_collection(name="my_collection", embedding_function=self.embedding_func)
+
+    def __call__(self, doc: Documents, ids: list, name: str | None = "my-collections") -> None:
+        self.embedding_func = embedding_functions.GooglePalmEmbeddingFunction(
+            api_key="AIzaSyBnOXear5WrP2FWdZ14tQATdy4_2i6aM-8"
+        )
+        self.collection = chroma_client.create_collection(name=name, embedding_function=self.embedding_func)
+        self.collection.add(documents=doc, ids=ids)
+
+    def query(self, query_text: str, n_results: int | None = 1, where: str | None = None) -> QueryResult:
+        results = self.collection.query(query_texts=query_text, n_results=n_results, where=where)
+        return results
 
 
-# Add some text documents to the collection:
-# collection.add(
-#     documents=["This is a document", "This is another document"],
-#     metadatas=[{"source": "my_source"}, {"source": "my_source"}],
-#     ids=["id1", "id2"]
-# )
+embed = ChromaClass()
+embed.__call__(doc=["""These SQL techniques are essential from \
+a data warehousing perspective, such as trend analysis, temporal analytics, managing \
+sequences, unique counts, and managing processes as transactions."""], ids=["a"])
+print(embed.query(query_text="SQL"))
 
-# collection.add(
-#     embeddings=[[1.2, 2.3, 4.5], [6.7, 8.2, 9.2]],
-#     documents=["This is a document", "This is another document"],
-#     metadatas=[{"source": "my_source"}, {"source": "my_source"}],
-#     ids=["id1", "id2"]
-# )
-
-# Query collection:
-# You can query the collection with a list of query texts,
-# and Chroma will return the n most similar results. It's that easy!
-
-# results = collection.query(
-#     query_texts=["This is a query document"],
-#     n_results=2
-# )
-
-"""
-By default data stored in Chroma is ephemeral making it easy
-to prototype scripts.
-It's easy to make Chroma persistent so you can reuse
-every collection you create and add more documents to it later.
-It will load your data automatically when you start the client,
-and save it automatically when you close it.
-"""
-
+# To get embeddings: embed.query(query_text="For what SQL techniques are  important?")["embeddings"]
