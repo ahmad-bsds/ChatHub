@@ -1,6 +1,9 @@
 import streamlit as st
 from connections import Connection
 from chroma import ChromaClass
+from dotenv import load_dotenv
+
+load_dotenv()
 
 conn = Connection()
 
