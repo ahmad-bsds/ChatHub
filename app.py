@@ -1,9 +1,11 @@
 import streamlit as st
-from connections import  Connection
-from streamlit_modal import Modal
+from connections import Connection
+from chroma import ChromaClass
 
 conn = Connection()
 
+chroma = ChromaClass(file_path="./Doc/deepLearning.pdf")
+chroma.__call__()
 
 USER_AVATAR = "♥️"
 BOT_AVATAR = "💬"
@@ -31,7 +33,7 @@ st.set_page_config(
 st.title("Streamly Streamlit Assistant")
 
 # TODO: Configure chat and model:
-# Creating a chat session;
+# Creating a chat session:
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
@@ -47,13 +49,17 @@ for message in st.session_state["messages"]:
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("How I can help you?"): # := means if prompt isn't none.
-    response = conn.response(prompt)
+if prompt := st.chat_input("How I can help you?"):  # := means if prompt isn't none.
+    result = chroma.query(prompt)
+    response = conn.response(f"""Answer the query: {result["query"]} from {result["context"]["documents"]} with the\
+     help of your advance reasoning,\
+     pattren mining and decision making ability.""")
+
     # store user message in session.
     st.session_state["messages"].append(
         {
-            "role":"user",
-            "content" : prompt
+            "role": "user",
+            "content": prompt
         }
     )
     with st.chat_message("user", avatar=USER_AVATAR):
@@ -70,4 +76,3 @@ if prompt := st.chat_input("How I can help you?"): # := means if prompt isn't no
                 "content": final_response
             }
         )
-
