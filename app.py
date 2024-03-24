@@ -37,10 +37,12 @@ st.title("Streamly Streamlit Assistant")
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
+
 # Sidebar:
 with st.sidebar:
     st.write("Chat 💬")
-    st.button("New +")
+    a = st.file_uploader("Upload", accept_multiple_files=False, )
+
 
 # TODO: configure chat interface:
 
@@ -54,6 +56,8 @@ if prompt := st.chat_input("How I can help you?"):  # := means if prompt isn't n
     response = conn.response(f"""Answer the query: {result["query"]} from {result["context"]["documents"]} with the\
      help of your advance reasoning,\
      pattren mining and decision making ability.""")
+    if a:
+        st.markdown(a)
 
     # store user message in session.
     st.session_state["messages"].append(
