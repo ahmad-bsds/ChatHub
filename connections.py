@@ -1,11 +1,33 @@
-# from langchain_google_genai import GoogleGenerativeAI
-import google.generativeai as genai
+from langchain_google_genai import GoogleGenerativeAI
+from langchain_core.output_parsers import StrOutputParser
+from langchain.prompts import ChatPromptTemplate
+from chroma import ChromaClass
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough
+
+TEMPLATE = """
+Answer the question based on the context below. If you can't 
+answer the question, reply "I don't know".
+
+Context: {context}
+
+Question: {question}
+"""
 
 
 class Connection:
     def __init__(self):
-        genai.configure(api_key='AIzaSyBnOXear5WrP2FWdZ14tQATdy4_2i6aM-8')
-        self.model = genai.GenerativeModel('gemini-pro')
+        self.chroma = ChromaClass()
+        self.model = GoogleGenerativeAI(model="gemini-pro", google_api_key='AIzaSyBnOXear5WrP2FWdZ14tQATdy4_2i6aM-8')
+        self.parser = StrOutputParser()
+        self.prompt = ChatPromptTemplate.from_template(TEMPLATE)
 
-    def response(self, prompt: str):
-        return self.model.generate_content(prompt).text
+    async def response(self, prompt: str):
+        retriever = await self.chroma.retriever
+        setup = RunnableParallel(context=retriever, question=RunnablePassthrough())
+        chain = setup | self.prompt | self.model | self.parser
+        response = await chain.invoke(prompt)
+        return response
+
+
+# c = Connection()
+# print(c.response("What is deep Learning?"))

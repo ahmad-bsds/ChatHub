@@ -7,21 +7,16 @@ load_dotenv()
 
 conn = Connection()
 
-chroma = ChromaClass()
-chroma.__call__()
-chroma.read_file(file_path="./Doc/deepLearning.pdf")
-chroma.create_collection()
 
 
 
-
-def main():
+async def main():
     USER_AVATAR = "♥️"
     BOT_AVATAR = "💬"
     # Streamlit Page Configuration
     st.set_page_config(
         page_title="ChatHub",
-        page_icon="./avatar.png",
+        page_icon="../avatar.png",
         layout="wide",
         initial_sidebar_state="expanded",
         menu_items={
@@ -49,6 +44,8 @@ def main():
     with st.sidebar:
         st.write("Chat 💬")
         # uploaded_files = st.file_uploader("Upload", accept_multiple_files=False)
+        # with open("./Doc/", "r") as file:
+        #     file.write(uploaded_files.read())
 
     for message in st.session_state["messages"]:
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
@@ -56,13 +53,11 @@ def main():
             st.write(message["content"])
 
     if prompt := st.chat_input("How I can help you?"):  # := means if prompt isn't none.
-        result = chroma.query(prompt)
-        response = conn.response(f"""Answer the query: {result["query"]} from {result["context"]["documents"]} with the\
-         help of your advance reasoning,\
-         pattren mining and decision making ability.""")
+        response = await conn.response(prompt)
 
         # store user message in session.
         st.session_state["messages"].append(
+
             {
                 "role": "user",
                 "content": prompt
