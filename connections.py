@@ -4,6 +4,7 @@ from langchain.prompts import ChatPromptTemplate
 from chroma import ChromaClass
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 
+
 TEMPLATE = """
 Answer the question based on the context below. If you can't 
 answer the question, reply "I don't know".
@@ -21,12 +22,12 @@ class Connection:
         self.parser = StrOutputParser()
         self.prompt = ChatPromptTemplate.from_template(TEMPLATE)
 
-    async def response(self, prompt: str):
-        retriever = await self.chroma.retriever
+    def response(self, prompt: str):
+        retriever = self.chroma.retriever
         setup = RunnableParallel(context=retriever, question=RunnablePassthrough())
         chain = setup | self.prompt | self.model | self.parser
-        response = await chain.invoke(prompt)
-        return response
+        return chain.invoke(prompt)
+
 
 
 # c = Connection()
