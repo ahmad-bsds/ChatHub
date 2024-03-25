@@ -7,8 +7,12 @@ load_dotenv()
 
 conn = Connection()
 
-chroma = ChromaClass(file_path="./Doc/deepLearning.pdf")
+chroma = ChromaClass()
 chroma.__call__()
+chroma.read_file(file_path="./Doc/deepLearning.pdf")
+chroma.create_collection()
+
+
 
 
 def main():
@@ -17,7 +21,7 @@ def main():
     # Streamlit Page Configuration
     st.set_page_config(
         page_title="ChatHub",
-        page_icon="imgs/avatar_streamly.png",
+        page_icon="./avatar.png",
         layout="wide",
         initial_sidebar_state="expanded",
         menu_items={
@@ -29,14 +33,13 @@ def main():
                 **Techs used**
                 - PalmAI
                 - Langchain
-                - Python
+                - Python 
             """
         }
     )
 
     # Streamlit Updates and Expanders
     st.title("Streamly Streamlit Assistant")
-
 
     # Creating a chat session:
     if "messages" not in st.session_state:
@@ -46,7 +49,6 @@ def main():
     with st.sidebar:
         st.write("Chat 💬")
         # uploaded_files = st.file_uploader("Upload", accept_multiple_files=False)
-
 
     for message in st.session_state["messages"]:
         avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
@@ -86,4 +88,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-chroma.__delete__()
+# chroma.delete()
