@@ -7,14 +7,12 @@ import os
 
 load_dotenv()
 
-
-
 USER_AVATAR = "♥️"
 BOT_AVATAR = "💬"
 # Streamlit Page Configuration
 st.set_page_config(
     page_title="ChatHub",
-    page_icon="../avatar.png",
+    page_icon="./avatar.png",
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
@@ -40,7 +38,8 @@ if "messages" not in st.session_state:
 
 # Sidebar:
 with st.sidebar:
-    st.write("Chat 💬")
+    st.write("Chat file upload here!")
+    st.write("File less than 2mb is recommended. Responses may be slow ⚠️")
     uploaded_files = st.file_uploader("Upload", accept_multiple_files=False, type=["pdf"])
     if uploaded_files is not None:
         pdf_reader = PyPDF2.PdfReader(uploaded_files)
@@ -53,19 +52,21 @@ with st.sidebar:
             pdf_writer.add_page(page)
 
         # Save the writer object to a new PDF file
-        with open("./Doc/output_file.pdf", "wb") as output_pdf:
+        with open("./Doc/data.pdf", "wb") as output_pdf:
             pdf_writer.write(output_pdf)
+        # setting up connection if file is uploaded.
         conn = Connection()
-    if uploaded_files is not None and uploaded_files.close():
-        os.remove("./Doc/doc.pdf")
 
 for message in st.session_state["messages"]:
     avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
     with st.chat_message(message["role"], avatar=avatar):
         st.write(message["content"])
 
-if prompt := st.chat_input("How I can help you?"):  # := means if prompt isn't none.
-    response = conn.response(prompt)
+if prompt := st.chat_input("Upload a file to start!"):  # := means if prompt isn't none.
+    if uploaded_files is not None:
+        response = conn.response(prompt)
+    else:
+        response = "Please upload a file first to start!"
 
     # store user message in session.
     st.session_state["messages"].append(

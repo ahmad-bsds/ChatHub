@@ -2,6 +2,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader
 
 
+# Class to split text.
 class DocToken:
     def __init__(self):
         loader = DirectoryLoader("./Doc/", glob="./*.pdf", loader_cls=PyPDFLoader)

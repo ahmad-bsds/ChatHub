@@ -4,10 +4,9 @@ from langchain.prompts import ChatPromptTemplate
 from chroma import ChromaClass
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 
-
 TEMPLATE = """
 Answer the question based on the context below. If you can't 
-answer the question, reply "I don't know".
+answer the question, reply "I don't know please, rephrase the question.".
 
 Context: {context}
 
@@ -18,7 +17,7 @@ Question: {question}
 class Connection:
     def __init__(self):
         self.chroma = ChromaClass()
-        self.model = GoogleGenerativeAI(model="gemini-pro", google_api_key='AIzaSyBnOXear5WrP2FWdZ14tQATdy4_2i6aM-8')
+        self.model = GoogleGenerativeAI(model="gemini-pro", google_api_key='API_KEY_HERE')
         self.parser = StrOutputParser()
         self.prompt = ChatPromptTemplate.from_template(TEMPLATE)
 
@@ -27,8 +26,6 @@ class Connection:
         setup = RunnableParallel(context=retriever, question=RunnablePassthrough())
         chain = setup | self.prompt | self.model | self.parser
         return chain.invoke(prompt)
-
-
 
 # c = Connection()
 # print(c.response("What is deep Learning?"))

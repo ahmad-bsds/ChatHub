@@ -6,7 +6,7 @@ from langchain_community.embeddings import google_palm
 
 
 os.environ["ALLOW_RESET"] = "True"
-os.environ["GOOGLE_API_KEY"] = "AIzaSyBnOXear5WrP2FWdZ14tQATdy4_2i6aM-8"
+os.environ["GOOGLE_API_KEY"] = "API_KEY_HERE"
 
 
 class ChromaClass:
