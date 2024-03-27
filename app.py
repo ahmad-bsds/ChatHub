@@ -42,16 +42,20 @@ if "messages" not in st.session_state:
 with st.sidebar:
     st.write("Chat 💬")
     uploaded_files = st.file_uploader("Upload", accept_multiple_files=False, type=["pdf"])
+    if uploaded_files is not None:
+        pdf_reader = PyPDF2.PdfReader(uploaded_files)
+        # Create a new PDF writer object
+        pdf_writer = PyPDF2.PdfWriter()
 
-    conn = Connection()
-    # pdf_reader = PyPDF2.PdfReader(uploaded_files)
-    # count = len(pdf_reader.pages)
-    # all_page_text = ""
-    # for page_num in range(count):
-    #     page = pdf_reader.pages[page_num]
-    #     all_page_text += page.extract_text()
-    # with open("./Doc/doc", "wb") as f:
-    #     f.write(all_page_text.encode())
+        # Add pages from the original PDF to the writer object
+        for page_num in range(len(pdf_reader.pages)):
+            page = pdf_reader.pages[page_num]
+            pdf_writer.add_page(page)
+
+        # Save the writer object to a new PDF file
+        with open("./Doc/output_file.pdf", "wb") as output_pdf:
+            pdf_writer.write(output_pdf)
+        conn = Connection()
     if uploaded_files is not None and uploaded_files.close():
         os.remove("./Doc/doc.pdf")
 
