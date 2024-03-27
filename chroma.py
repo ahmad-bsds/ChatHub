@@ -1,4 +1,4 @@
-
+import chromadb
 from langchain_community.vectorstores import chroma
 from pdfReader import DocToken
 import os
@@ -18,11 +18,14 @@ class ChromaClass:
         self.vector_db = chroma.Chroma.from_documents(
             documents=token.tokens(),
             embedding=embed,
-            persist_directory=persist_dir
+            persist_directory=persist_dir,
+            client=chromadb.PersistentClient("./Collections")
         )
+        self.vector_db.persist()
         self.retriever = self.vector_db.as_retriever(search_kwargs={"k": 5})
-# c = ChromaClass()
-# print(c.retrieve("What is deep learning?"))
 
+#
+# c = ChromaClass()
+# print(c.retriever.invoke("DL"))
 
 
